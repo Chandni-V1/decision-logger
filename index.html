@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decision Logger</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        :root {
+            --primary-color: #4f46e5;
+            --primary-dark: #4338ca;
+            --secondary-color: #06b6d4;
+            --success-color: #10b981;
+            --background-color: #f8fafc;
+            --card-background: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+        }
+
+        body {
+            background-color: var(--background-color);
+            background-image: 
+                radial-gradient(circle at 100% 100%, rgba(79, 70, 229, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 0% 0%, rgba(6, 182, 212, 0.1) 0%, transparent 50%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: var(--card-background);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .title {
+            font-size: 28px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .title-icon {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .search-box {
+            padding: 12px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            width: 300px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: 10px center;
+            background-size: 20px;
+            padding-left: 40px;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .add-new-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .add-new-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+        }
+
+        .form-container {
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.05), rgba(6, 182, 212, 0.05));
+            padding: 30px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            border: 2px solid rgba(79, 70, 229, 0.1);
+            animation: fadeIn 0.5s ease;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background-color: white;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .decision-list {
+            display: grid;
+            gap: 24px;
+            padding: 10px;
+        }
+
+        .decision-card {
+            background-color: white;
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+            animation: slideIn 0.5s ease;
+        }
+
+        .decision-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .decision-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .decision-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .decision-date {
+            color: var(--text-secondary);
+            font-size: 14px;
+            background-color: #f1f5f9;
+            padding: 6px 12px;
+            border-radius: 20px;
+        }
+
+        .decision-content {
+            margin: 16px 0;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .decision-content strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .action-items {
+            margin-top: 16px;
+            padding: 16px;
+            background-color: #f8fafc;
+            border-radius: 12px;
+            border-left: 4px solid var(--success-color);
+        }
+
+        .share-btn {
+            padding: 8px 16px;
+            background-color: var(--success-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .share-btn:hover {
+            background-color: #059669;
+            transform: translateY(-2px);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+            animation: fadeIn 0.5s ease;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .empty-state p {
+            font-size: 18px;
+            margin-bottom: 24px;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            background-color: #f1f5f9;
+            color: var(--text-secondary);
+        }
+
+        .documents {
+            margin-top: 16px;
+            padding: 16px;
+            background-color: #f8fafc;
+            border-radius: 12px;
+        }
+
+        .documents a {
+            color: var(--primary-color);
+            text-decoration: none;
+            display: inline-block;
+            margin: 4px 0;
+            transition: all 0.3s ease;
+        }
+
+        .documents a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        .participants-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 8px 0;
+        }
+
+        .participant-tag {
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(6, 182, 212, 0.1));
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container animate__animated animate__fadeIn">
+        <div class="header">
+            <h1 class="title">
+                <span class="title-icon">📝</span>
+                Decision Logger
+            </h1>
+            <input type="text" class="search-box" placeholder="Search decisions..." id="searchInput">
+        </div>
+
+        <button class="add-new-btn" id="addNewBtn" style="display: none;">
+            <span>+</span> Add New Decision
+        </button>
+
+        <div id="formContainer" class="form-container">
+            <form id="decisionForm">
+                <div class="form-group">
+                    <label for="topic">Topic/Feature</label>
+                    <input type="text" id="topic" required placeholder="Enter the main topic or feature name">
+                </div>
+                <div class="form-group">
+                    <label for="date">Date</label>
+                    <input type="date" id="date" required>
+                </div>
+                <div class="form-group">
+                    <label for="participants">Participants</label>
+                    <input type="text" id="participants" placeholder="Enter participant names separated by commas" required>
+                </div>
+                <div class="form-group">
+                    <label for="agenda">Agenda</label>
+                    <textarea id="agenda" required placeholder="Describe the meeting agenda and discussion points"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="decision">Final Decision</label>
+                    <textarea id="decision" required placeholder="Document the final decision made"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="actionItems">Action Items</label>
+                    <textarea id="actionItems" placeholder="List action items and assignees (e.g., 'Update API docs - @John')"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="documents">Relevant Documents (URLs)</label>
+                    <textarea id="documents" placeholder="Enter document URLs, one per line"></textarea>
+                </div>
+                <button type="submit" class="add-new-btn">💾 Save Decision</button>
+            </form>
+        </div>
+
+        <div id="decisionList" class="decision-list"></div>
+    </div>
+
+    <script>
+        class DecisionLogger {
+            constructor() {
+                this.decisions = JSON.parse(localStorage.getItem('decisions')) || [];
+                this.setupEventListeners();
+                this.renderDecisions();
+            }
+
+            setupEventListeners() {
+                document.getElementById('decisionForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.addDecision();
+                });
+
+                document.getElementById('searchInput').addEventListener('input', (e) => {
+                    this.searchDecisions(e.target.value);
+                });
+
+                document.getElementById('addNewBtn').addEventListener('click', () => {
+                    document.getElementById('formContainer').style.display = 'block';
+                    document.getElementById('addNewBtn').style.display = 'none';
+                });
+            }
+
+            addDecision() {
+                const decision = {
+                    id: Date.now(),
+                    topic: document.getElementById('topic').value,
+                    date: document.getElementById('date').value,
+                    participants: document.getElementById('participants').value.split(',').map(p => p.trim()),
+                    agenda: document.getElementById('agenda').value,
+                    decision: document.getElementById('decision').value,
+                    actionItems: document.getElementById('actionItems').value,
+                    documents: document.getElementById('documents').value.split('\n').filter(url => url.trim()),
+                    timestamp: new Date().toISOString()
+                };
+
+                this.decisions.unshift(decision);
+                this.saveToLocalStorage();
+                this.renderDecisions();
+                this.resetForm();
+
+                document.getElementById('formContainer').style.display = 'none';
+                document.getElementById('addNewBtn').style.display = 'block';
+            }
+
+            searchDecisions(query) {
+                if (!query) {
+                    this.renderDecisions();
+                    return;
+                }
+
+                const searchQuery = query.toLowerCase();
+                const filteredDecisions = this.decisions.filter(decision => 
+                    decision.topic.toLowerCase().includes(searchQuery) ||
+                    decision.date.includes(searchQuery) ||
+                    decision.participants.some(p => p.toLowerCase().includes(searchQuery)) ||
+                    decision.agenda.toLowerCase().
