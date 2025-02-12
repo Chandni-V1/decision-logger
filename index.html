@@ -1,431 +1,373 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Decision Logger</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Decision Logger</title>
+  <style>
+    /* Modern and Clean Styles */
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 40px;
+      background-color: #f8f9fa;
+      color: #333;
+      line-height: 1.6;
+    }
 
-        :root {
-            --primary-color: #4f46e5;
-            --primary-dark: #4338ca;
-            --secondary-color: #06b6d4;
-            --success-color: #10b981;
-            --background-color: #f8fafc;
-            --card-background: #ffffff;
-            --text-primary: #1e293b;
-            --text-secondary: #64748b;
-        }
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 10px;
+      font-size: 3rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, #3498db, #27ae60);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+      padding: 0 10px;
+    }
 
-        body {
-            background-color: var(--background-color);
-            background-image: 
-                radial-gradient(circle at 100% 100%, rgba(79, 70, 229, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 0% 0%, rgba(6, 182, 212, 0.1) 0%, transparent 50%);
-            min-height: 100vh;
-            padding: 20px;
-        }
+    .header-container {
+      text-align: center;
+      margin-bottom: 40px;
+    }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background-color: var(--card-background);
-            padding: 30px;
-            border-radius: 16px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        }
+    .description {
+      text-align: center;
+      color: #555;
+      font-size: 1.1rem;
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #f1f5f9;
-        }
+    .description::before {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 4px;
+      background: linear-gradient(90deg, #3498db, #27ae60);
+      border-radius: 2px;
+    }
 
-        .title {
-            font-size: 28px;
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
 
-        .title-icon {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+    .search-box {
+      float: right;
+      margin-bottom: 20px;
+    }
 
-        .search-box {
-            padding: 12px 20px;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            width: 300px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'%3E%3C/path%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: 10px center;
-            background-size: 20px;
-            padding-left: 40px;
-        }
+    .search-box input {
+      padding: 12px 16px;
+      width: 250px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
 
-        .search-box:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-        }
+    .search-box input:focus {
+      border-color: #3498db;
+      box-shadow: 0 2px 8px rgba(52, 152, 219, 0.2);
+      outline: none;
+    }
 
-        .add-new-btn {
-            padding: 12px 24px;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+    .add-new-btn {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+      margin-bottom: 20px;
+    }
 
-        .add-new-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
-        }
+    .add-new-btn:hover {
+      background-color: #2980b9;
+    }
 
-        .form-container {
-            background: linear-gradient(135deg, rgba(79, 70, 229, 0.05), rgba(6, 182, 212, 0.05));
-            padding: 30px;
-            border-radius: 16px;
-            margin-bottom: 30px;
-            border: 2px solid rgba(79, 70, 229, 0.1);
-            animation: fadeIn 0.5s ease;
-        }
+    .empty-state {
+      text-align: center;
+      color: #777;
+      margin-top: 50px;
+      font-size: 1.2rem;
+    }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
+    .form-container {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      margin-bottom: 30px;
+    }
 
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--text-primary);
-            font-weight: 500;
-        }
+    .form-container h2 {
+      margin-top: 0;
+      color: #2c3e50;
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
 
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            background-color: white;
-        }
+    .form-container input,
+    .form-container textarea {
+      width: 100%;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
 
-        .form-group input:focus,
-        .form-group textarea:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-        }
+    .form-container textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
 
-        .form-group textarea {
-            min-height: 120px;
-            resize: vertical;
-        }
+    .form-container input:focus,
+    .form-container textarea:focus {
+      border-color: #3498db;
+      box-shadow: 0 2px 8px rgba(52, 152, 219, 0.2);
+      outline: none;
+    }
 
-        .decision-list {
-            display: grid;
-            gap: 24px;
-            padding: 10px;
-        }
+    .form-container button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
 
-        .decision-card {
-            background-color: white;
-            border-radius: 16px;
-            padding: 24px;
-            transition: all 0.3s ease;
-            border: 1px solid #e2e8f0;
-            animation: slideIn 0.5s ease;
-        }
+    .form-container button:hover {
+      background-color: #2980b9;
+    }
 
-        .decision-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
-        }
+    .decision-log {
+      background: white;
+      padding: 25px;
+      margin-bottom: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
 
-        .decision-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-            padding-bottom: 16px;
-            border-bottom: 2px solid #f1f5f9;
-        }
+    .decision-log:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    }
 
-        .decision-title {
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
+    .decision-log h3 {
+      margin-top: 0;
+      color: #2c3e50;
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 15px;
+    }
 
-        .decision-date {
-            color: var(--text-secondary);
-            font-size: 14px;
-            background-color: #f1f5f9;
-            padding: 6px 12px;
-            border-radius: 20px;
-        }
+    .decision-log p {
+      margin: 10px 0;
+      color: #555;
+    }
 
-        .decision-content {
-            margin: 16px 0;
-            color: var(--text-secondary);
-            line-height: 1.6;
-        }
+    .decision-log strong {
+      color: #333;
+    }
 
-        .decision-content strong {
-            color: var(--text-primary);
-            font-weight: 600;
-        }
+    .share-btn {
+      background-color: #27ae60;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+      margin-top: 15px;
+    }
 
-        .action-items {
-            margin-top: 16px;
-            padding: 16px;
-            background-color: #f8fafc;
-            border-radius: 12px;
-            border-left: 4px solid var(--success-color);
-        }
-
-        .share-btn {
-            padding: 8px 16px;
-            background-color: var(--success-color);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .share-btn:hover {
-            background-color: #059669;
-            transform: translateY(-2px);
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--text-secondary);
-            animation: fadeIn 0.5s ease;
-        }
-
-        .empty-state-icon {
-            font-size: 64px;
-            margin-bottom: 24px;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .empty-state p {
-            font-size: 18px;
-            margin-bottom: 24px;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-
-        .tag {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 500;
-            margin-right: 8px;
-            margin-bottom: 8px;
-            background-color: #f1f5f9;
-            color: var(--text-secondary);
-        }
-
-        .documents {
-            margin-top: 16px;
-            padding: 16px;
-            background-color: #f8fafc;
-            border-radius: 12px;
-        }
-
-        .documents a {
-            color: var(--primary-color);
-            text-decoration: none;
-            display: inline-block;
-            margin: 4px 0;
-            transition: all 0.3s ease;
-        }
-
-        .documents a:hover {
-            color: var(--primary-dark);
-            text-decoration: underline;
-        }
-
-        .participants-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin: 8px 0;
-        }
-
-        .participant-tag {
-            background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(6, 182, 212, 0.1));
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 14px;
-            color: var(--text-primary);
-        }
-    </style>
+    .share-btn:hover {
+      background-color: #219653;
+    }
+  </style>
 </head>
 <body>
-    <div class="container animate__animated animate__fadeIn">
-        <div class="header">
-            <h1 class="title">
-                <span class="title-icon">📝</span>
-                Decision Logger
-            </h1>
-            <input type="text" class="search-box" placeholder="Search decisions..." id="searchInput">
-        </div>
+  <div class="container">
+    <!-- Header Container -->
+    <div class="header-container">
+      <h1>Decision Vault</h1>
+      <div class="description">
+Decisions made in meetings often get lost in the chaos of emails, Slack threads, and follow-ups.
+Log decisions in seconds, track action items, and never lose sight of what matters. With Decision Vault, every decision is documented, searchable, and shareable, so your team stays aligned and accountable.
 
-        <button class="add-new-btn" id="addNewBtn" style="display: none;">
-            <span>+</span> Add New Decision
-        </button>
-
-        <div id="formContainer" class="form-container">
-            <form id="decisionForm">
-                <div class="form-group">
-                    <label for="topic">Topic/Feature</label>
-                    <input type="text" id="topic" required placeholder="Enter the main topic or feature name">
-                </div>
-                <div class="form-group">
-                    <label for="date">Date</label>
-                    <input type="date" id="date" required>
-                </div>
-                <div class="form-group">
-                    <label for="participants">Participants</label>
-                    <input type="text" id="participants" placeholder="Enter participant names separated by commas" required>
-                </div>
-                <div class="form-group">
-                    <label for="agenda">Agenda</label>
-                    <textarea id="agenda" required placeholder="Describe the meeting agenda and discussion points"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="decision">Final Decision</label>
-                    <textarea id="decision" required placeholder="Document the final decision made"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="actionItems">Action Items</label>
-                    <textarea id="actionItems" placeholder="List action items and assignees (e.g., 'Update API docs - @John')"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="documents">Relevant Documents (URLs)</label>
-                    <textarea id="documents" placeholder="Enter document URLs, one per line"></textarea>
-                </div>
-                <button type="submit" class="add-new-btn">💾 Save Decision</button>
-            </form>
-        </div>
-
-        <div id="decisionList" class="decision-list"></div>
+      </div>
     </div>
 
-    <script>
-        class DecisionLogger {
-            constructor() {
-                this.decisions = JSON.parse(localStorage.getItem('decisions')) || [];
-                this.setupEventListeners();
-                this.renderDecisions();
-            }
+    <!-- Search Box -->
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search by topic, date..." oninput="filterLogs()">
+    </div>
 
-            setupEventListeners() {
-                document.getElementById('decisionForm').addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    this.addDecision();
-                });
+    <!-- Add New Button -->
+    <button class="add-new-btn" onclick="openForm()">+ Add New</button>
 
-                document.getElementById('searchInput').addEventListener('input', (e) => {
-                    this.searchDecisions(e.target.value);
-                });
+    <!-- Empty State -->
+    <div id="emptyState" class="empty-state">
+      <p>No decision logs found. Click "+ Add New" to log a decision.</p>
+    </div>
 
-                document.getElementById('addNewBtn').addEventListener('click', () => {
-                    document.getElementById('formContainer').style.display = 'block';
-                    document.getElementById('addNewBtn').style.display = 'none';
-                });
-            }
+    <!-- Form Container -->
+    <div id="formContainer" class="form-container" style="display: none;">
+      <h2>Log a New Decision</h2>
+      <input type="text" id="topic" placeholder="Topic/Feature">
+      <input type="date" id="date">
+      <textarea id="participants" placeholder="Participants"></textarea>
+      <textarea id="agenda" placeholder="Agenda"></textarea>
+      <textarea id="documents" placeholder="Relevant Document Links"></textarea>
+      <textarea id="decision" placeholder="Final Decision"></textarea>
+      <textarea id="actionPoints" placeholder="Action Points"></textarea>
+      <button onclick="saveDecision()">Save Decision</button>
+    </div>
 
-            addDecision() {
-                const decision = {
-                    id: Date.now(),
-                    topic: document.getElementById('topic').value,
-                    date: document.getElementById('date').value,
-                    participants: document.getElementById('participants').value.split(',').map(p => p.trim()),
-                    agenda: document.getElementById('agenda').value,
-                    decision: document.getElementById('decision').value,
-                    actionItems: document.getElementById('actionItems').value,
-                    documents: document.getElementById('documents').value.split('\n').filter(url => url.trim()),
-                    timestamp: new Date().toISOString()
-                };
+    <!-- Decision Logs Container -->
+    <div id="logsContainer"></div>
+  </div>
 
-                this.decisions.unshift(decision);
-                this.saveToLocalStorage();
-                this.renderDecisions();
-                this.resetForm();
+  <script>
+    let logs = JSON.parse(localStorage.getItem('decisionLogs')) || [];
 
-                document.getElementById('formContainer').style.display = 'none';
-                document.getElementById('addNewBtn').style.display = 'block';
-            }
+    // Open form to add a new decision
+    function openForm() {
+      document.getElementById('formContainer').style.display = 'block';
+      document.getElementById('emptyState').style.display = 'none';
+    }
 
-            searchDecisions(query) {
-                if (!query) {
-                    this.renderDecisions();
-                    return;
-                }
+    // Save a new decision
+    function saveDecision() {
+      const topic = document.getElementById('topic').value;
+      const date = document.getElementById('date').value;
+      const participants = document.getElementById('participants').value;
+      const agenda = document.getElementById('agenda').value;
+      const documents = document.getElementById('documents').value;
+      const decision = document.getElementById('decision').value;
+      const actionPoints = document.getElementById('actionPoints').value;
 
-                const searchQuery = query.toLowerCase();
-                const filteredDecisions = this.decisions.filter(decision => 
-                    decision.topic.toLowerCase().includes(searchQuery) ||
-                    decision.date.includes(searchQuery) ||
-                    decision.participants.some(p => p.toLowerCase().includes(searchQuery)) ||
-                    decision.agenda.toLowerCase().
+      if (!topic || !date || !decision) {
+        alert('Topic, Date, and Decision are required!');
+        return;
+      }
+
+      const newLog = {
+        id: Date.now(),
+        topic,
+        date,
+        participants,
+        agenda,
+        documents,
+        decision,
+        actionPoints,
+      };
+
+      logs.push(newLog);
+      localStorage.setItem('decisionLogs', JSON.stringify(logs));
+      renderLogs();
+      clearForm();
+    }
+
+    // Render all logs
+    function renderLogs(filteredLogs = logs) {
+      const logsContainer = document.getElementById('logsContainer');
+      const emptyState = document.getElementById('emptyState');
+      logsContainer.innerHTML = '';
+
+      if (filteredLogs.length === 0) {
+        emptyState.style.display = 'block'; // Show empty state if no logs
+      } else {
+        emptyState.style.display = 'none'; // Hide empty state if logs exist
+
+        filteredLogs.forEach(log => {
+          const logElement = document.createElement('div');
+          logElement.className = 'decision-log';
+          logElement.innerHTML = `
+            <h3>${log.topic}</h3>
+            <p><strong>Date:</strong> ${log.date}</p>
+            <p><strong>Participants:</strong> ${log.participants}</p>
+            <p><strong>Agenda:</strong> ${log.agenda}</p>
+            <p><strong>Relevant Document Links:</strong> ${log.documents}</p>
+            <p><strong>Decision:</strong> ${log.decision}</p>
+            <p><strong>Action Points:</strong> ${log.actionPoints}</p>
+            <button class="share-btn" onclick="shareLog(${log.id})">Share via Email</button>
+          `;
+          logsContainer.appendChild(logElement);
+        });
+      }
+    }
+
+    // Clear form after saving
+    function clearForm() {
+      document.getElementById('topic').value = '';
+      document.getElementById('date').value = '';
+      document.getElementById('participants').value = '';
+      document.getElementById('agenda').value = '';
+      document.getElementById('documents').value = '';
+      document.getElementById('decision').value = '';
+      document.getElementById('actionPoints').value = '';
+      document.getElementById('formContainer').style.display = 'none';
+    }
+
+    // Filter logs based on search input
+    function filterLogs() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const filteredLogs = logs.filter(log =>
+        log.topic.toLowerCase().includes(searchTerm) ||
+        log.date.includes(searchTerm)
+      );
+      renderLogs(filteredLogs);
+    }
+
+    // Share log via email
+    function shareLog(id) {
+      const log = logs.find(log => log.id === id);
+      if (!log) return;
+
+      const subject = `Decision Log: ${log.topic}`;
+      const body = `
+        Topic: ${log.topic}
+        Date: ${log.date}
+        Participants: ${log.participants}
+        Agenda: ${log.agenda}
+        Relevant Document Links: ${log.documents}
+        Decision: ${log.decision}
+        Action Points: ${log.actionPoints}
+      `;
+      const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.location.href = mailtoLink;
+    }
+
+    // Initial render
+    renderLogs();
+  </script>
+</body>
+</html>
